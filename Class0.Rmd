@@ -1,0 +1,88 @@
+---
+title: "Class 0"
+author: "Lin Tian"
+date: "3/7/2017"
+output: html_document
+---
+
+This code will teach how to visualize gene expression using heatmap.
+
+## Install package
+
+You need to install `heatmap3` first. If you already installed the package, just load it using either `library` or `require`.
+
+```{r}
+# install.packages("heatmap3")
+library(heatmap3)
+library(RColorBrewer)
+
+setwd("~/training")
+```
+
+## Download gene expression data
+
+We downloaded the data from [GSE84114](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE84114), the file is named as **GSE84114_BICA_RNAseq.Normalized.RData.gz**.
+
+In linux system, you can use the commands below.
+
+```
+wget ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE84nnn/GSE84114/suppl/GSE84114_BICA_RNAseq.Normalized.RData.gz
+gunzip GSE84114_BICA_RNAseq.Normalized.RData.gz
+```
+
+Once you download, save, and upzip the file in the current working directory. You can load the file.
+
+```{r}
+load("~/training/GSE84114_BICA_RNAseq.Normalized.RData")
+```
+
+* `hu/ms`: expression levels from human cancer cells/mouse stroma cells;
+* `gene/isoform`: gene expressoin or isoform expression;
+* `rld/vsd`: two approaches of normalization, **vsd** is designed for samples with sparse expression matrix.
+
+We will use **hu_gene.rld** for gene expression analysis.
+
+Let's first collapse the Ensembl gene ID to gene symbols.
+
+```{r}
+# source("https://bioconductor.org/biocLite.R")
+# biocLite("biomaRt")
+
+library(biomaRt)
+
+ensembl <- useMart("ENSEMBL_MART_ENSEMBL")
+ensembl <- useDataset("hsapiens_gene_ensembl",mart=ensembl)
+map <- getBM(mart=ensembl, attributes=c("ensembl_gene_id", "hgnc_symbol"), filters="ensembl_gene_id", values=rownames(hu_gene.rld))
+map <- map[map$hgnc_symbol!="", ]
+probes <- rownames(hu_gene.rld)[rownames(hu_gene.rld) %in% map$ensembl_gene_id]
+ambiguous <- sapply(probes, function(x) length(unique(map$hgnc_symbol[map$ensembl_gene_id==x]))>1)
+probes <- probes[!ambiguous]
+map <- map[map$ensembl_gene_id %in% rownames(hu_gene.rld), ]
+
+genenames <- unique(map$hgnc_symbol[map$ensembl_gene_id %in% probes])
+hu_gene.exp <- matrix(NA, nrow=length(genenames), ncol=ncol(hu_gene.rld))
+rownames(hu_gene.exp) <- genenames
+colnames(hu_gene.exp) <- colnames(hu_gene.rld)
+for(g in genenames) {
+  p <- as.character(map$ensembl_gene_id[map$hgnc_symbol==g])
+  if(length(p)==1) {
+    hu_gene.exp[g, ] <- hu_gene.rld[p, ]
+  }
+  else{
+    hu_gene.exp[g, ] <- apply(hu_gene.rld[p, ], 2, max)
+  }
+}
+```
+
+
+Suppose we are interested in the expression levels of the genes list below.
+
+```{r}
+goi <- c("SP7", "SERPINB5", "ANLN", "BIRC5", "CCNA2", "CCNB1", "CCND3", "PDK1", "MCM4", "PCNA", "CYCS", "FOXO3", "EZH1", "EZH2", "DDX39A", "DICER", "AMOT", "BHLHE41", "COL1A1", "COL4A5", "CTSD", "DDR1", "EPHA5", "GATA6", "NR2F1", "SOX9", "STAT3", "TGFB2", "TP53", "TPM1", "HES") ## gene of interested
+
+goi <- goi[goi %in% rownames(hu_gene.exp)]
+colorKeys_groups <- c("2D cell culture"="#666666", "BICA"="#ff7f00", "Bone"="#a6761d", "Orthotopic"="#e7298a")
+colColors <- c(samples=colorKeys_groups[sampleInfo$Description[order(sampleInfo$Description)]])
+heatmap3(hu_gene.exp[goi, order(sampleInfo$Description)], Colv = NA, col=colorRampPalette(brewer.pal(11,"RdYlBu"))(1024), ColSideColors=colColors, revC=TRUE)
+```
+
