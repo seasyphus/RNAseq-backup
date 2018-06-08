@@ -22,7 +22,7 @@ Here is the head of the job script (**.sh**).
 #PBS -l mem=120gb
 #PBS -l walltime=60:00:00
 #PBS -m ae
-#PBS -M ltian@bcm.edu
+#PBS -M haiw@bcm.edu
 #PBS -o /project/zhang/pbs_output
 #PBS -e /project/zhang/pbs_output
 #PBS -S /bin/bash
@@ -124,7 +124,7 @@ fastqc *fastq.gz
 Once this quality control is finished, you can download the html reports to your local computer and open the reports using web browsers (Chrome, Firefox). To download the reports, open the terminal window in you local computer and run the commands below.
 
 ```
-scp ltian@chemo.dldcc.bcm.edu:/project/zhang/Hai_training/sampleDirectory/*html .
+scp XXX@chemo.dldcc.bcm.edu:/project/zhang/Hai_training/sampleDirectory/*html .
 ```
 
 ## Build Reference
