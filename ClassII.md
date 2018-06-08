@@ -57,7 +57,7 @@ module load homer/4.8
 cd /project/zhang/Hai_training/XenomeRef
 genomeDir=/project/zhang/Hai_training/Genome_training
 
-/home/ltian/xenome-1.0.1-r/xenome index -M 64 -T 8 -P kmer25 --tmp-dir ./ -v -H $genomeDir/mm.fa -G $genomeDir/hs.fa
+/home/XXX/xenome-1.0.1-r/xenome index -M 64 -T 8 -P kmer25 --tmp-dir ./ -v -H $genomeDir/mm.fa -G $genomeDir/hs.fa
 ```
 
 ### Sorting the Reads
@@ -70,7 +70,7 @@ qsub -I -l vmem=32gb
 cd /project/zhang/Hai_training/Orth_rep1
 
 XenomeIdx=/project/zhang/Hai_training/XenomeRef/kmer25
-/home/ltian/xenome-1.0.1-r/xenome classify -P $XenomeIdx --pairs -i *_1.fastq.gz -i *_2.fastq.gz --graft-name human --host-name mouse
+/home/XXX/xenome-1.0.1-r/xenome classify -P $XenomeIdx --pairs -i *_1.fastq.gz -i *_2.fastq.gz --graft-name human --host-name mouse
 ```
 
 You can write a **for** loop to go through all the samples.
@@ -120,7 +120,7 @@ cd /project/zhang/Hai_training/samples
 for f in ./*;
   do
     cd "$f" && echo Entering into $f and begin analysis
-    /home/ltian/xenome-1.0.1-r/xenome classify -P $XenomeIdx --pairs -i *_1.fastq.gz -i *_2.fastq.gz --graft-name ${PWD##*/}_human --host-name ${PWD##*/}_mouse
+    /home/XXX/xenome-1.0.1-r/xenome classify -P $XenomeIdx --pairs -i *_1.fastq.gz -i *_2.fastq.gz --graft-name ${PWD##*/}_human --host-name ${PWD##*/}_mouse
     cd ..
   done;
 ```
