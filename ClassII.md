@@ -278,7 +278,7 @@ rsem-generate-data-matrix */*mouse_RSEM.genes.results > BICA_mouse.count.txt
 After obtaining the merged matrix table, you can transfer the merged table to Cyverse istance. Here is the example code.
 
 ```
-scp BICA_human.count.txt lintian0616@128.196.64.106:~
+scp BICA_human.count.txt XXX@128.196.64.XXX:~
 ```
 
 We then use `DEseq2` to normalize the data in [R programming](https://www.r-project.org/).
