@@ -3,7 +3,7 @@
 ## ssh
 
 ```
-ssh ltian@chemo.dldcc.bcm.edu
+ssh XXX@chemo.dldcc.bcm.edu
 ```
 
 To analyze the samples, you can use either interactive mode or batch job mode.
